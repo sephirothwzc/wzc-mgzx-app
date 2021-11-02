@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import hello, { post } from './apis/lambda';
+import hello, { post, appUserAll } from './apis/lambda';
+import { useImmer } from 'use-immer';
+import { AppUserEntity } from './apis/lib/model/app-user.entity';
 
 function App() {
   const [message, setMessage] = useState('');
+  const [appUser, setAppUser] = useImmer<Array<AppUserEntity>>([]);
 
   useEffect(() => {
     hello().then((response) => setMessage(response.message));
-  }, []);
+    appUserAll('1').then((result) => setAppUser((draft) => result));
+  }, [setAppUser, setMessage]);
 
   const handleClick = async () => {
     const message = window.prompt('Type message!');
@@ -52,6 +56,7 @@ function App() {
             Vite Docs
           </a>
         </p>
+        {JSON.stringify(appUser)}
       </header>
     </div>
   );
